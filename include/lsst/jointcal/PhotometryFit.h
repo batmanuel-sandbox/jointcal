@@ -20,15 +20,23 @@ namespace jointcal {
 //! Class that handles the photometric least squares problem.
 class PhotometryFit : public FitterBase {
 public:
-    //! this is the only constructor
+    /**
+     * Construct a photometry fitter.
+     *
+     * @param associations The associations catalog to use in the fitter.
+     * @param photometryModel The model to build the fitter for.
+     * @param fluxError The systematic error pedestal to apply to measured instFlux errors
+     *                  (as a percent of instFlux).
+     */
     PhotometryFit(std::shared_ptr<Associations> associations,
-                  std::shared_ptr<PhotometryModel> photometryModel)
+                  std::shared_ptr<PhotometryModel> photometryModel, double fluxError)
             : FitterBase(associations),
               _fittingModel(false),
               _fittingFluxes(false),
               _photometryModel(photometryModel),
               _nParModel(0),
-              _nParFluxes(0) {
+              _nParFluxes(0),
+              _fluxError(fluxError) {
         _log = LOG_GET("jointcal.PhotometryFit");
     }
 
@@ -68,6 +76,9 @@ private:
     // counts in parameter subsets.
     unsigned int _nParModel;
     unsigned int _nParFluxes;
+
+    // The systematic pedestal to apply to flux errors, as a percent of flux.
+    double _fluxError;
 
     void accumulateStatImageList(CcdImageList const &ccdImageList, Chi2Accumulator &accum) const override;
 

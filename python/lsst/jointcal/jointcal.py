@@ -131,6 +131,11 @@ class JointcalConfig(pexConfig.Config):
         dtype=float,
         default=0.02,
     )
+    fluxError = pexConfig.Field(
+        doc="Constant term for error on flux (fraction of source flux)",
+        dtype=float,
+        default=0.02,
+    )
     # TODO: DM-6885 matchCut should be an afw.geom.Angle
     matchCut = pexConfig.Field(
         doc="Matching radius between fitted and reference stars (arcseconds)",
@@ -568,7 +573,7 @@ class JointcalTask(pipeBase.CmdLineTask):
         elif self.config.photometryModel == "simple":
             model = lsst.jointcal.SimplePhotometryModel(associations.getCcdImageList())
 
-        fit = lsst.jointcal.PhotometryFit(associations, model)
+        fit = lsst.jointcal.PhotometryFit(associations, model, self.config.fluxError)
         chi2 = fit.computeChi2()
         # TODO DM-12446: turn this into a "butler save" somehow.
         # Save reference and measurement chi2 contributions for this data

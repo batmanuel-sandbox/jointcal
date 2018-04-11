@@ -55,8 +55,8 @@ void declareAstrometryFit(py::module &mod) {
 void declarePhotometryFit(py::module &mod) {
     py::class_<PhotometryFit, std::shared_ptr<PhotometryFit>, FitterBase> cls(mod, "PhotometryFit");
 
-    cls.def(py::init<std::shared_ptr<Associations>, std::shared_ptr<PhotometryModel>>(), "associations"_a,
-            "photometryModel"_a);
+    cls.def(py::init<std::shared_ptr<Associations>, std::shared_ptr<PhotometryModel>, double>(),
+            "associations"_a, "photometryModel"_a, "fluxError"_a);
 }
 
 PYBIND11_PLUGIN(fitter) {

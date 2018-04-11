@@ -47,6 +47,7 @@ class JointcalTestCFHTMinimal(jointcalTestBase.JointcalTestBase, lsst.utils.test
     def test_jointcalTask_2_visits_photometry(self):
         self.config = lsst.jointcal.jointcal.JointcalConfig()
         self.config.photometryRefObjLoader.retarget(LoadAstrometryNetObjectsTask)
+        self.config.fluxError = 0  # To keep the test consistent with previous behavior.
         self.config.doAstrometry = False
         self.jointcalStatistics.do_astrometry = False
 
