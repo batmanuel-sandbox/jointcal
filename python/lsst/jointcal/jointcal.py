@@ -152,6 +152,11 @@ class JointcalConfig(pexConfig.Config):
         dtype=int,
         default=30,
     )
+    maxIterations = pexConfig.Field(
+        doc="Maximum number of minimize() iterations before declaring the fit has failed to converge.",
+        dtype=int,
+        default=20
+    )
     astrometrySimpleOrder = pexConfig.Field(
         doc="Polynomial order for fitting the simple astrometry model.",
         dtype=int,
@@ -596,7 +601,12 @@ class JointcalTask(pipeBase.CmdLineTask):
         model.freezeErrorTransform()
         self.log.debug("Photometry error scales are frozen.")
 
-        chi2 = self._iterate_fit(associations, fit, model, 20, "photometry", "Model Fluxes")
+        chi2 = self._iterate_fit(associations,
+                                 fit,
+                                 model,
+                                 self.config.maxIterations,
+                                 "photometry",
+                                 "Model Fluxes")
 
         add_measurement(self.job, 'jointcal.photometry_final_chi2', chi2.chi2)
         add_measurement(self.job, 'jointcal.photometry_final_ndof', chi2.ndof)
@@ -676,7 +686,12 @@ class JointcalTask(pipeBase.CmdLineTask):
             raise FloatingPointError('Pre-iteration chi2 is invalid: %s'%chi2)
         self.log.info("Fit prepared with %s", str(chi2))
 
-        chi2 = self._iterate_fit(associations, fit, model, 20, "astrometry", "Distortions Positions")
+        chi2 = self._iterate_fit(associations,
+                                 fit,
+                                 model,
+                                 self.config.maxIterations,
+                                 "astrometry",
+                                 "Distortions Positions")
 
         add_measurement(self.job, 'jointcal.astrometry_final_chi2', chi2.chi2)
         add_measurement(self.job, 'jointcal.astrometry_final_ndof', chi2.ndof)
